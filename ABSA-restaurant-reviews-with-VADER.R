@@ -1,7 +1,8 @@
 # Aspect-Based Sentiment Analysis of online restaurant reviews with VADER
-# By: Joe Domaleski
+# By: Joe Domaleski 
 # More information about this R script on https://blog.marketingdatascience.ai
 
+# Step 0 - Setup the environment 
 # Load essential libraries
 library(stopwords)   # Provides common stop words for text filtering
 library(tidyverse)   # Data manipulation and visualization
@@ -10,7 +11,7 @@ library(wordcloud)   # Creates word clouds for frequency visualization
 library(scales)      # Adjusts scales and labels in plots
 library(tidytext)    # Tidy text processing for tokenization and word analysis
 
-# Setup environment
+# Get ready for processing
 rm(list = ls()) # Clear environment
 set.seed(77) # Set seed for reproducibility
 
@@ -21,7 +22,7 @@ custom_stopwords <- c("a", "an", "the", "and", "or", "in", "on", "at",
                       "his", "her", "our", "their", "its", "then", 
                       "when", "where", "there")
 
-# Load data, add word count, and adjust data as needed
+# Step 1 - Load data and review it
 reviews <- read_csv("yelp_reviews_bouchon_bakery_las_vegas.csv", show_col_types = FALSE) %>%
   sample_n(1000) %>%
   mutate(word_count = str_count(review, "\\w+")) %>%  # Calculate word count
@@ -35,7 +36,7 @@ initial_word_frequencies <- reviews %>%
   count(word, sort = TRUE) %>%
   filter(n > 1)  # Exclude single occurrences for clarity
 
-# Filter to keep only the top 20 most frequent words
+# Filter to keep only the top 30 most frequent words
 top_words <- initial_word_frequencies %>%
   slice_max(n, n = 30)
 
@@ -222,7 +223,7 @@ plot_violin <- ggplot(aspect_sentiments %>% filter(is.finite(compound)), aes(x =
   theme(legend.position = "none")
 print(plot_violin)
 
-# Step 6: Create combined word clouds for positive and negative words by aspect, suppressing `tm_map` warnings
+# Step 6: Create combined word clouds for positive and negative words by aspect
 par(mfrow = c(2, 2), mar = c(1, 1, 1, 1))  # Set up a 2x2 plotting grid, adjust margins
 
 for (aspect_name in unique(aspect_sentiments$aspect)) {
